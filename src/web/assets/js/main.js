@@ -1,7 +1,19 @@
 class Components {
-    constructor(topbar = new Element()) {
-        this.topbar = topbar;
+    constructor(home = {}) {
+        this.home = home;
     }
 }
 
-module.exports = Components;
+/* function setRoute() {
+    const components = new Components();
+    const pathname = window.location.pathname;
+
+    Object.keys(components).map((key, index) => {
+        if(components[key].path == pathname) {
+            fetch(config.baseUrl + components[key].component).then((response) => {
+                console.log(response);
+            });
+        }
+    });
+}
+ */

@@ -1,30 +1,36 @@
 /* Models */
 const Chat = require("./models/Chat");
 
+/* Web Components */
+/* const Components = require("./web/assets/js/components"); */
+
+const http = require("http");
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const app = express();
+const app = require("./app/index");
+const router = express.Router();
 
 const TelegramBot = require("node-telegram-bot-api");
 const BotToken = '583549843:AAHs8099KipsR-zqglLH26BtEBaXaF_2zXw';
+
 const BotOptions = {
     polling: true
 };
+
 const AppOptions = {
     port: 5000,
     chatId: -263200970,
-}
+};
+
+const bot = new TelegramBot(BotToken, BotOptions);
+const chatInfo = new Chat();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
-const bot = new TelegramBot(BotToken, BotOptions);
-
 /* Server */
-const server = app.listen(AppOptions.port, function(req, res) {
-    const chatInfo = new Chat();
-
+http.createServer(app).listen(AppOptions.port, function(req, res) {
     bot.getChat(AppOptions.chatId)
         .then(chat => {
             chatInfo.id = chat.id;
@@ -34,12 +40,6 @@ const server = app.listen(AppOptions.port, function(req, res) {
         });
 
     console.log(`Listening on *:${AppOptions.port}`);
-});
-
-/* App routes */
-app.post('/message/all', (req, res) => {
-    const message = req.body;
-
 });
 
 /* Bot commands */
