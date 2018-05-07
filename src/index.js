@@ -23,7 +23,16 @@ const bot = new TelegramBot(BotToken, BotOptions);
 
 /* Server */
 const server = app.listen(AppOptions.port, function(req, res) {
-    const App = new Chat();
+    const chatInfo = new Chat();
+
+    bot.getChat(AppOptions.chatId)
+        .then(chat => {
+            chatInfo.id = chat.id;
+            chatInfo.title = chat.title;
+            chatInfo.type = chat.type;
+            chatInfo.all_members_are_administrators = chat.all_members_are_administrators;
+        });
+
     console.log(`Listening on *:${AppOptions.port}`);
 });
 
