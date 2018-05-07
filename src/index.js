@@ -1,0 +1,75 @@
+/* Models */
+const Chat = require("./models/Chat");
+
+const express = require("express");
+const bodyParser = require("body-parser");
+
+const app = express();
+
+const TelegramBot = require("node-telegram-bot-api");
+const BotToken = '583549843:AAHs8099KipsR-zqglLH26BtEBaXaF_2zXw';
+const BotOptions = {
+    polling: true
+};
+const AppOptions = {
+    port: 5000,
+    chatId: -263200970,
+}
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
+
+const bot = new TelegramBot(BotToken, BotOptions);
+
+/* Server */
+const server = app.listen(AppOptions.port, function(req, res) {
+    const App = new Chat();
+    console.log(`Listening on *:${AppOptions.port}`);
+});
+
+/* App routes */
+app.post('/message/all', (req, res) => {
+    const message = req.body;
+
+});
+
+/* Bot commands */
+// Command /start
+bot.onText(/\/start (.+)/, (msg, match) => {
+    const chatId = msg.chat.id;
+    const resp = 'Hello!';
+    
+    bot.sendMessage(chatId, resp);
+});
+
+// Command /rules
+bot.onText(/\/rules (.+)/, (msg, match) => {
+    const chatId = msg.chat.id;
+    const resp = match[1];
+    
+    bot.sendMessage(chatId, resp);
+});
+
+// Command /adminlist
+bot.onText(/\/adminlist (.+)/, (msg, match) => {
+    const chatId = msg.chat.id;
+    const resp = match[1];
+    
+    bot.sendMessage(chatId, resp);
+});
+
+// Command /question
+bot.onText(/\/question (.+)/, (msg, match) => {
+    const chatId = msg.chat.id;
+    const resp = match[1];
+    
+    bot.sendMessage(chatId, resp);
+});
+
+/* Main */
+bot.on('message', (msg) => {
+    bot.getChat(AppOptions.chatId)
+        .then(chat => {
+            console.log(chat);
+        });
+});
