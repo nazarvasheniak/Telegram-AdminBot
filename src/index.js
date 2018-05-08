@@ -28,6 +28,7 @@ const BotOptions = {
 const AppOptions = {
     port: 5000,
     chatId: -263200970,
+    questionChatId: 405744247
 };
 
 const bot = new TelegramBot(BotToken, BotOptions);
@@ -134,10 +135,37 @@ bot.onText(/\/adminlist/, (msg, match) => {
 
 // Command /question
 bot.onText(/\/question (.+)/, (msg, match) => {
-    const chatId = msg.chat.id;
-    const resp = match[1];
-    
-    bot.sendMessage(chatId, resp);
+    let question = match[1];
+    let respdata = {
+        firstname: msg.from.first_name !== undefined ? msg.from.first_name : '',
+        lastname: msg.from.last_name !== undefined ? msg.from.last_name : '',
+        username: msg.from.username !== undefined ? msg.from.username : ''
+    };
+    let resp = "Вопрос от пользователя: \n";
+
+    resp += respdata.firstname + " " + respdata.lastname + "\n";
+    resp += "@" + respdata.username + "\n";
+    resp += "Текст: " + question;
+
+    bot.sendMessage(AppOptions.questionChatId, resp);
+    bot.forwardMessage(AppOptions.questionChatId, msg.chat.id, msg.message_id);
+});
+
+bot.onText(/\/question@nazaradmin_bot (.+)/, (msg, match) => {
+    let question = match[1];
+    let respdata = {
+        firstname: msg.from.first_name !== undefined ? msg.from.first_name : '',
+        lastname: msg.from.last_name !== undefined ? msg.from.last_name : '',
+        username: msg.from.username !== undefined ? msg.from.username : ''
+    };
+    let resp = "Вопрос от пользователя: \n";
+
+    resp += respdata.firstname + " " + respdata.lastname + "\n";
+    resp += "@" + respdata.username + "\n";
+    resp += "Текст: " + question;
+
+    bot.sendMessage(AppOptions.questionChatId, resp);
+    bot.forwardMessage(AppOptions.questionChatId, msg.chat.id, msg.message_id);
 });
 
 /* Main */
