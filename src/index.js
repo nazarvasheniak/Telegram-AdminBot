@@ -8,6 +8,7 @@ const MessageModel = require("./models/Message");
 
 const http = require("http");
 const express = require("express");
+const fs = require("fs");
 
 const app = require("./app/index");
 const bodyParser = require("body-parser");
@@ -94,19 +95,41 @@ bot.onText(/\/start (.+)/, (msg, match) => {
 });
 
 // Command /rules
-bot.onText(/\/rules (.+)/, (msg, match) => {
-    const chatId = msg.chat.id;
-    const resp = match[1];
-    
-    bot.sendMessage(chatId, resp);
+bot.onText(/\/rules/, (msg, match) => {
+    let resp = '';
+    let readStream = fs.createReadStream('/root/telegram-admin/src/uploads/rules.txt', 'utf8');
+
+    readStream.on('data', function(chunk) {  
+        resp += chunk;
+    }).on('end', function() {
+        bot.sendMessage(msg.from.id, resp);
+    });
 });
 
 // Command /adminlist
-bot.onText(/\/adminlist (.+)/, (msg, match) => {
-    const chatId = msg.chat.id;
-    const resp = match[1];
-    
-    bot.sendMessage(chatId, resp);
+bot.onText(/\/adminlist/, (msg, match) => {
+    let adminlist = [];
+
+    (async() => {
+        let result = await bot.getChatAdministrators(AppOptions.chatId);
+        let resp = '';
+
+        result.forEach(row => {
+            adminlist.push({
+                firstname: row.user.first_name !== undefined ? row.user.first_name : '',
+                lastname: row.user.last_name !== undefined ? row.user.last_name : '',
+                username: row.user.username !== undefined ? row.user.username : ''
+            });
+        });
+
+        adminlist.forEach(user => {
+            resp += user.firstname + " " + user.lastname + "\n";
+            resp += "@" + user.username + "\n";
+            resp += "-------------------------\n\n";
+        });
+
+        bot.sendMessage(msg.from.id, resp);
+    })();
 });
 
 // Command /question

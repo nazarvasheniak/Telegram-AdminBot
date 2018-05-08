@@ -83,6 +83,11 @@ Assets.scripts.forEach(file => {
     });
 });
 
+router.get('/rules', (req, res) => {
+    res.status(200)
+        .sendFile('/root/telegram-admin/src/uploads/rules.txt');
+});
+
 app.use(router);
 
 module.exports = app;
