@@ -58,6 +58,13 @@ router.get('/messages/:userId', (req, res) => {
     })();
 });
 
+router.get('/messages/query/:query', (req, res) => {
+    (async() => {
+        let messages = await Message.getMessagesByQuery(req.params.query);
+        res.send(messages);
+    })();
+});
+
 app.use(bodyParser.urlencoded({
     extended: true
 }));

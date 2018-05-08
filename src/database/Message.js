@@ -37,8 +37,16 @@ async function getMessagesByUserId(userId) {
     return messages.map(message => new MessageModel(message.id, message.from, message.date, message.text));
 }
 
+async function getMessagesByQuery(query) {
+    let lookup = query.toLowerCase();
+    let messages = await Message.findAll({where: {text: sequelize.where(sequelize.fn('LOWER', sequelize.col('text')), 'LIKE', '%' + lookup + '%')}})
+
+    return messages.map(message => new MessageModel(message.id, message.from, message.date, message.text));
+}
+
 module.exports = {
     add,
     getAll,
-    getMessagesByUserId
+    getMessagesByUserId,
+    getMessagesByQuery
 };

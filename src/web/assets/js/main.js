@@ -168,3 +168,43 @@ document.querySelector('button[data-toggle="sendmassmessage"]')
 
         document.querySelector('#massMessageText').value = '';
     });
+
+document.querySelector('button[data-toggle="searchbykey"]')
+    .addEventListener('click', function() {
+        let query = document.querySelector('#searchByKeyText').value;
+        let req = new XMLHttpRequest();
+
+        req.open('get', 'http://195.64.154.40:5000/messages/query/'+ query, true);
+        req.onreadystatechange = function(e) {
+            if(req.readyState != 4) {
+                return;
+            }
+    
+            if(req.status != 200) {
+                msg.status = 'error';
+    
+                return 'Error: ' + req.statusText;
+            }
+
+            let messages = JSON.parse(req.response);
+            let html = '';
+
+            document.querySelector('#messagesSearchLabel').innerHTML = 'Результаты по запросу "'+ query +'":';
+
+            if(!messages.length) {
+                html += '<div class="message-block"><div class="message-block-text">Ничего не найдено.</div></div>';
+            } else {
+                messages.forEach(message => {
+                    let date = new Date();
+                    date.setTime(message.date * 1000);
+                    
+                    html += '<div class="message-block"><div class="message-block-title d-block p-2 bg-dark text-white"><h5>ID: <span style="font-weight: 500;">'+ message.from +'</span> | '+ date.toLocaleString() +'</h5></div><div class="message-block-text">'+ message.text +'</div></div>';
+                });
+            }
+
+            document.querySelector('#messagesSearch .messages-block').innerHTML = html;
+            $('#messagesSearch').modal('show');
+            document.querySelector('#searchByKeyText').value = '';
+        }
+        req.send();
+    });
