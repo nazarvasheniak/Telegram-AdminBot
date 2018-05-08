@@ -1,4 +1,5 @@
 /* Models */
+const User = require("./models/User");
 const Chat = require("./models/Chat");
 
 /* Web Components */
@@ -6,10 +7,13 @@ const Chat = require("./models/Chat");
 
 const http = require("http");
 const express = require("express");
-const bodyParser = require("body-parser");
 
 const app = require("./app/index");
+const bodyParser = require("body-parser");
+
 const router = express.Router();
+
+const ChatMember = require("./database/ChatMember");
 
 const TelegramBot = require("node-telegram-bot-api");
 const BotToken = '583549843:AAHs8099KipsR-zqglLH26BtEBaXaF_2zXw';
@@ -26,8 +30,16 @@ const AppOptions = {
 const bot = new TelegramBot(BotToken, BotOptions);
 const chatInfo = new Chat();
 
+router.post('/bot/sendmessage', (req, res) => {
+    bot.sendMessage(req.body.chatId, req.body.text);
+    res.status(200);
+});
+
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(router);
 
 /* Server */
 http.createServer(app).listen(AppOptions.port, function(req, res) {
@@ -77,8 +89,20 @@ bot.onText(/\/question (.+)/, (msg, match) => {
 
 /* Main */
 bot.on('message', (msg) => {
-    bot.getChat(AppOptions.chatId)
-        .then(chat => {
-            console.log(chat);
-        });
+    if(msg.chat.id == AppOptions.chatId) {
+        bot.getChatMember(msg.chat.id, msg.from.id)
+            .then(chatmember => {
+                const user = new User(chatmember.user);
+                
+                (async() => {
+                    await ChatMember.add(user);
+                })().catch(error => {
+                    console.log(error);
+                });
+            }).catch(error => {
+                console.log(error);
+            });
+        
+        bot.sendMessage(msg.chat.id, '1');
+    }
 });

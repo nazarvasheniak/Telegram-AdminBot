@@ -1,0 +1,43 @@
+<div class="row">
+    <div class="col">
+        <h2 class="display-4">Пользователи чата</h2>
+    </div>
+</div>
+
+<table class="table">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Bot</th>
+            <th scope="col">Имя</th>
+            <th scope="col">Фамилия</th>
+            <th scope="col">Никнейм</th>
+            <th scope="col">Lang</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <% Object.values(users).forEach(function(user){ %>
+            <td scope="row"><b><%= user.id %></b></td>
+            <td>
+                <% if(user.is_bot){ %>
+                    <b style="color: red">ДА</b>
+                <% } else { %>
+                    <b style="color: green">НЕТ</b>
+                <% } %>
+            </td>
+            <td><%= user.first_name %></td>
+            <td><%= user.last_name %></td>
+            <td>
+                <% if(user.username != '') { %>
+                    <a href="https://t.me/<%= user.username %>" target="_blank">@<%= user.username %></a>
+                <% } %>
+            </td>
+            <td><%= user.language_code %></td>
+            <td style="text-align: right;">
+                <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#sendMessage" data-user="<%= user.id %>">Сообщение</button>
+            </td>
+        <% }); %>
+    </tbody>
+</table>

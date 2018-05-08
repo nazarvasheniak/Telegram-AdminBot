@@ -8,13 +8,25 @@
 
     <body>
         <header>
-            <%= topbar %>
+            <div class="container">
+                <%- include('common/components/top-bar/top-bar.component.ejs') %>
+            </div>
         </header>
 
         <main class="main-content">
-            <%= router %>
+            <div class="main-actions">
+                <div class="container">
+                    <%- include('common/components/actions/actions.component.ejs') %>
+                </div>
+            </div>
+
+            <div class="container">
+                <%- include('common/components/users/users.component.ejs', {users: users}) %>
+            </div>
         </main>
 
+        <%- include("common/components/message-dialog/message-dialog.component.ejs") %>
+        
         <script src="/jquery/jquery-3.3.1.min.js"></script>
         <script src="/bootstrap/js/bootstrap.min.js"></script>
         <script src="/js/main.js"></script>

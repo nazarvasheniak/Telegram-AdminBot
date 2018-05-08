@@ -1,16 +1,18 @@
 const express = require("express");
 const fetch = require("node-fetch");
-const ejs = require('ejs');
+const ejs = require("ejs");
 
 const app = express();
 const router = express.Router();
 
+const ChatMember = require("../database/ChatMember");
+
 const Components = {
     home: {
-        src: '/root/telegram-admin/src/web/components/home/home.component.ejs'
+        src: '/root/telegram-admin/src/views/components/home/home.component.ejs'
     },
     topbar: {
-        src: '/root/telegram-admin/src/web/common/components/top-bar/top-bar.component.ejs'
+        src: '/root/telegram-admin/src/views/common/components/top-bar/top-bar.component.ejs'
     }
 };
 
@@ -49,6 +51,7 @@ const Assets = {
     ]
 };
 
+app.engine('ejs', require('ejs').renderFile);
 app.set('view engine', 'ejs');
 app.set('views', '/root/telegram-admin/src/views');
 
@@ -63,21 +66,12 @@ Assets.styles.forEach(file => {
 /* App routes */
 Object.keys(AppRoutes).map((key, index) => {
     router.get(AppRoutes[key].path, (req, res) => {
-        const options = {};
+        const data = {};
 
-        new Promise((resolve, rejected) => {
-            ejs.renderFile(AppRoutes[key].component.src)
-                .then(file => options.router = file);
-        
-            ejs.renderFile(Components.topbar.src)
-                .then(file => options.topbar = file);
-        }).then(result => {
-            res.status(200)
-                .render('index', {
-                    router: ejs.renderFile(AppRoutes[key].component.src),
-                    topbar: ejs.renderFile(Components.topbar.src),
-                });
-        });        
+        (async() => {
+            data.users = await ChatMember.getAll();
+            res.status(200).render('index', data);
+        })();
     });
 });
 

@@ -1,0 +1,55 @@
+.display-4 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.alert {
+    position: absolute;
+    top: 25px;
+    right: 5%;
+    max-width: 400px;
+    font-size: .9rem;
+    padding: .75rem;
+    display: none;
+}
+
+.alert .close {
+    position: relative;
+    font-size: 1.2rem;
+    padding-left: 10px;
+}
+
+header {
+    background-color: #f8f9fa!important;
+}
+
+header .navbar {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+main.main-content {
+    padding: 25px 0;
+}
+
+.main-actions {
+    margin: 25px 0;
+}
+
+.main-actions .action-block {
+    background-color: #dee2e6;
+}
+
+.main-actions .action-block .action-block-title {
+    text-align: left;
+}
+
+.main-actions .action-block .action-block-content {
+    padding: .5rem .75rem;
+}
+
+.main-actions .action-block .action-block-title > h5 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 300;
+}
