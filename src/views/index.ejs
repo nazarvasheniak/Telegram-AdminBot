@@ -14,18 +14,19 @@
         </header>
 
         <main class="main-content">
+            <div class="container">
+                <%- include('common/components/users/users.component.ejs', {users: users}) %>
+            </div>
+
             <div class="main-actions">
                 <div class="container">
                     <%- include('common/components/actions/actions.component.ejs') %>
                 </div>
             </div>
-
-            <div class="container">
-                <%- include('common/components/users/users.component.ejs', {users: users}) %>
-            </div>
         </main>
 
         <%- include("common/components/message-dialog/message-dialog.component.ejs") %>
+        <%- include("common/components/messages-history/messages-history.component.ejs") %>
         
         <script src="/jquery/jquery-3.3.1.min.js"></script>
         <script src="/bootstrap/js/bootstrap.min.js"></script>

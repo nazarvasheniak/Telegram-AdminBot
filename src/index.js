@@ -1,6 +1,7 @@
 /* Models */
 const User = require("./models/User");
 const Chat = require("./models/Chat");
+const MessageModel = require("./models/Message");
 
 /* Web Components */
 /* const Components = require("./web/assets/js/components"); */
@@ -14,6 +15,7 @@ const bodyParser = require("body-parser");
 const router = express.Router();
 
 const ChatMember = require("./database/ChatMember");
+const Message = require("./database/Message");
 
 const TelegramBot = require("node-telegram-bot-api");
 const BotToken = '583549843:AAHs8099KipsR-zqglLH26BtEBaXaF_2zXw';
@@ -33,6 +35,27 @@ const chatInfo = new Chat();
 router.post('/bot/sendmessage', (req, res) => {
     bot.sendMessage(req.body.chatId, req.body.text);
     res.status(200);
+});
+
+router.get('/users', (req, res) => {
+    (async() => {
+        let users = await ChatMember.getAll();
+        res.send(users);
+    })();
+});
+
+router.get('/messages', (req, res) => {
+    (async() => {
+        let messages = await Message.getAll();
+        res.send(messages);
+    })();
+});
+
+router.get('/messages/:userId', (req, res) => {
+    (async() => {
+        let messages = await Message.getMessagesByUserId(req.params.userId);
+        res.send(messages);
+    })();
 });
 
 app.use(bodyParser.urlencoded({
@@ -92,7 +115,7 @@ bot.on('message', (msg) => {
     if(msg.chat.id == AppOptions.chatId) {
         bot.getChatMember(msg.chat.id, msg.from.id)
             .then(chatmember => {
-                const user = new User(chatmember.user);
+                let user = new User(chatmember.user);
                 
                 (async() => {
                     await ChatMember.add(user);
@@ -103,6 +126,12 @@ bot.on('message', (msg) => {
                 console.log(error);
             });
         
-        bot.sendMessage(msg.chat.id, '1');
+        (async() => {
+            let message = new MessageModel(msg.message_id, msg.from.id, msg.date, msg.text);
+
+            await Message.add(message);
+        })().catch(error => {
+            console.log(error);
+        });
     }
 });

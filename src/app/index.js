@@ -6,6 +6,7 @@ const app = express();
 const router = express.Router();
 
 const ChatMember = require("../database/ChatMember");
+const Message = require("../database/Message");
 
 const Components = {
     home: {

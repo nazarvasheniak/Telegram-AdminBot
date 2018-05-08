@@ -26,8 +26,6 @@ const ChatMember = sequelize.define('chatmember', {
     }
 });
 
-sequelize.sync();
-
 async function add(user) {
     await ChatMember.findOrCreate({
         where: { id: user.id },

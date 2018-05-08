@@ -53,3 +53,18 @@ main.main-content {
     font-size: 1.1rem;
     font-weight: 300;
 }
+
+.messages-block .message-block {
+    margin-bottom: 15px;
+    background-color: #dee2e6;
+}
+
+.messages-block .message-block .message-block-title > h5 {
+    margin: 0;
+    font-size: .85rem;
+    font-weight: 300;
+}
+
+.messages-block .message-block .message-block-text {
+    padding: .5rem;
+}
