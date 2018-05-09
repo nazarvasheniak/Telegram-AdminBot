@@ -60,6 +60,13 @@ router.get('/messages/:userId', (req, res) => {
     })();
 });
 
+router.post('/messages/range', (req, res) => {
+    (async() => {
+        let messages = await Message.getMessagesByRange(req.body.start, req.body.end);
+        res.send(messages);
+    })();
+});
+
 router.get('/messages/query/:query', (req, res) => {
     (async() => {
         let messages = await Message.getMessagesByQuery(req.params.query);
@@ -97,14 +104,17 @@ bot.onText(/\/start (.+)/, (msg, match) => {
 
 // Command /rules
 bot.onText(/\/rules/, (msg, match) => {
-    let resp = '';
-    let readStream = fs.createReadStream('/root/telegram-admin/src/uploads/rules.txt', 'utf8');
+    (async() => {
+        let chatmember = await bot.getChatMember(msg.chat.id, msg.from.id);
+        let resp = '';
+        let readStream = fs.createReadStream('/root/telegram-admin/src/uploads/rules.txt', 'utf8');
 
-    readStream.on('data', function(chunk) {  
-        resp += chunk;
-    }).on('end', function() {
-        bot.sendMessage(msg.from.id, resp);
-    });
+        readStream.on('data', function(chunk) {  
+            resp += chunk;
+        }).on('end', function() {
+            bot.sendMessage(chatmember.user.id, resp);
+        });
+    })();
 });
 
 // Command /adminlist
@@ -112,6 +122,7 @@ bot.onText(/\/adminlist/, (msg, match) => {
     let adminlist = [];
 
     (async() => {
+        let chatmember = await bot.getChatMember(msg.chat.id, msg.from.id);
         let result = await bot.getChatAdministrators(AppOptions.chatId);
         let resp = '';
 
@@ -129,43 +140,49 @@ bot.onText(/\/adminlist/, (msg, match) => {
             resp += "-------------------------\n\n";
         });
 
-        bot.sendMessage(msg.from.id, resp);
+        bot.sendMessage(chatmember.user.id, resp);
     })();
 });
 
 // Command /question
 bot.onText(/\/question (.+)/, (msg, match) => {
-    let question = match[1];
-    let respdata = {
-        firstname: msg.from.first_name !== undefined ? msg.from.first_name : '',
-        lastname: msg.from.last_name !== undefined ? msg.from.last_name : '',
-        username: msg.from.username !== undefined ? msg.from.username : ''
-    };
-    let resp = "Вопрос от пользователя: \n";
+    (async() => {
+        let chatmember = await bot.getChatMember(msg.chat.id, msg.from.id);
+        let question = match[1];
+        let respdata = {
+            firstname: msg.from.first_name !== undefined ? msg.from.first_name : '',
+            lastname: msg.from.last_name !== undefined ? msg.from.last_name : '',
+            username: msg.from.username !== undefined ? msg.from.username : ''
+        };
+        let resp = "Вопрос от пользователя: \n";
 
-    resp += respdata.firstname + " " + respdata.lastname + "\n";
-    resp += "@" + respdata.username + "\n";
-    resp += "Текст: " + question;
+        resp += respdata.firstname + " " + respdata.lastname + "\n";
+        resp += "@" + respdata.username + "\n";
+        resp += "Текст: " + question;
 
-    bot.sendMessage(AppOptions.questionChatId, resp);
-    bot.forwardMessage(AppOptions.questionChatId, msg.chat.id, msg.message_id);
+        bot.sendMessage(AppOptions.questionChatId, resp);
+        bot.forwardMessage(AppOptions.questionChatId, msg.chat.id, msg.message_id);
+    })();
 });
 
 bot.onText(/\/question@nazaradmin_bot (.+)/, (msg, match) => {
-    let question = match[1];
-    let respdata = {
-        firstname: msg.from.first_name !== undefined ? msg.from.first_name : '',
-        lastname: msg.from.last_name !== undefined ? msg.from.last_name : '',
-        username: msg.from.username !== undefined ? msg.from.username : ''
-    };
-    let resp = "Вопрос от пользователя: \n";
+    (async() => {
+        let chatmember = await bot.getChatMember(msg.chat.id, msg.from.id);
+        let question = match[1];
+        let respdata = {
+            firstname: msg.from.first_name !== undefined ? msg.from.first_name : '',
+            lastname: msg.from.last_name !== undefined ? msg.from.last_name : '',
+            username: msg.from.username !== undefined ? msg.from.username : ''
+        };
+        let resp = "Вопрос от пользователя: \n";
 
-    resp += respdata.firstname + " " + respdata.lastname + "\n";
-    resp += "@" + respdata.username + "\n";
-    resp += "Текст: " + question;
+        resp += respdata.firstname + " " + respdata.lastname + "\n";
+        resp += "@" + respdata.username + "\n";
+        resp += "Текст: " + question;
 
-    bot.sendMessage(AppOptions.questionChatId, resp);
-    bot.forwardMessage(AppOptions.questionChatId, msg.chat.id, msg.message_id);
+        bot.sendMessage(AppOptions.questionChatId, resp);
+        bot.forwardMessage(AppOptions.questionChatId, msg.chat.id, msg.message_id);
+    })();
 });
 
 /* Main */
@@ -185,7 +202,8 @@ bot.on('message', (msg) => {
             });
         
         (async() => {
-            let message = new MessageModel(msg.message_id, msg.from.id, msg.date, msg.text);
+            let chatmember = await bot.getChatMember(msg.chat.id, msg.from.id);
+            let message = new MessageModel(msg.message_id, chatmember.user.id, msg.date, msg.text);
 
             await Message.add(message);
         })().catch(error => {

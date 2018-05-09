@@ -61,7 +61,29 @@ function updateUsers() {
     req.send();
 }
 
+function updateMessagesCount() {
+    let req = new XMLHttpRequest();
+    req.open('get', 'http://195.64.154.40:5000/messages', true);
+    req.onreadystatechange = function(e) {
+        if(req.readyState != 4) {
+            return;
+        }
+
+        if(req.status != 200) {
+            msg.status = 'error';
+
+            return 'Error: ' + req.statusText;
+        }
+
+        let json = JSON.parse(req.response);
+
+        document.querySelector('#messagesCount span').innerHTML = json.length;
+    }
+    req.send();
+}
+
 updateUsers();
+updateMessagesCount();
 
 Object.values(document.querySelectorAll('button[data-target="#messagesHistory"]'))
     .forEach(button => {
@@ -207,4 +229,39 @@ document.querySelector('button[data-toggle="searchbykey"]')
             document.querySelector('#searchByKeyText').value = '';
         }
         req.send();
+    });
+
+document.querySelector('button[data-toggle="dateMessages"]')
+    .addEventListener('click', function() {
+        let range = {
+            start: document.querySelector('#dateMessagesStart').value + ' 00:00:00',
+            end: document.querySelector('#dateMessagesEnd').value + ' 23:59:59'
+        };
+        let data = 'start=' + range.start + '&end=' + range.end;
+        let req = new XMLHttpRequest();
+
+        req.open('post', 'http://195.64.154.40:5000/messages/range', true);
+        req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        req.onreadystatechange = function(e) {
+            if(req.readyState != 4) {
+                return;
+            }
+
+            if(req.status != 200) {
+                return 'Error: ' + req.statusText;
+            }
+
+            let messages = JSON.parse(req.response);
+
+            document.querySelector('button[data-toggle="dateMessages"]').innerHTML = messages.length + ' сообщений';
+            document.querySelector('button[data-toggle="dateMessages"]').classList.remove('btn-success');
+            document.querySelector('button[data-toggle="dateMessages"]').classList.add('btn-danger');
+
+            setTimeout(function() {
+                document.querySelector('button[data-toggle="dateMessages"]').innerHTML = 'Выбор';
+                document.querySelector('button[data-toggle="dateMessages"]').classList.remove('btn-danger');
+                document.querySelector('button[data-toggle="dateMessages"]').classList.add('btn-success');
+            }, 3000);
+        }
+        req.send(data);
     });

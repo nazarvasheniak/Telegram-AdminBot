@@ -14,7 +14,7 @@
             <div class="action-block-content">
                 <div class="form-group">
                     <label for="massMessageText">Текст сообщения</label>
-                    <textarea class="form-control" id="massMessageText" rows="3"></textarea>
+                    <textarea class="form-control" id="massMessageText" rows="4"></textarea>
                 </div>
 
                 <button type="button" class="btn btn-success btn-block" data-toggle="sendmassmessage">Отправить</button>
@@ -31,7 +31,7 @@
             <div class="action-block-content">
                 <div class="form-group">
                     <label for="searchByKeyText">Текст сообщения</label>
-                    <textarea class="form-control" id="searchByKeyText" rows="3"></textarea>
+                    <textarea class="form-control" id="searchByKeyText" rows="4"></textarea>
                 </div>
 
                 <button type="button" class="btn btn-success btn-block" data-toggle="searchbykey">Искать</button>
@@ -39,6 +39,25 @@
         </div>
     </div>
 
-    <div class="col"></div>
+    <div class="col">
+        <div class="action-block">
+            <div class="action-block-title d-block p-2 bg-dark text-white">
+                <h5>Количество сообщений</h5>
+            </div>
+
+            <div class="action-block-content">
+                <label id="messagesCount">Общее кол-во: <span style="color: green; font-weight: bold;"></span></label>
+
+                <div class="form-group">
+                    <label>Выбрать период:</label>
+                    <input type="date" class="form-control" id="dateMessagesStart" style="margin-bottom: .5rem;">
+                    <input type="date" class="form-control" id="dateMessagesEnd">
+                </div>
+
+                <button type="button" class="btn btn-success btn-block" data-toggle="dateMessages">Выбор</button>
+            </div>
+        </div>
+    </div>
+
     <div class="col"></div>
 </div>
